@@ -4,7 +4,7 @@
 /**
  * @file
  * @author  Mike Aiello N2HTT <n2htt@arrl.net>
- * @version 1.0
+ * @version 1.1
  *
  * @section LICENSE
  *
@@ -65,15 +65,9 @@ void setupVFOs()   {
 /**
  * setup for digital pin input (button presses)
  */
-void setupInputPins()   {                
-   // enable serial debug messages for DigitalPin
-   DigitalPin::writePulsesToSerialEnabled = false;  
-
+void setupInputPins()   {  
    VFOSelectPin.initialize();  
    FrequencyDeltaSelectPin.initialize();
-
-   VFOSelectPin.resume();  
-   FrequencyDeltaSelectPin.resume();
 }
 
 /**
@@ -97,8 +91,8 @@ void setupEncoder()   {
  * setup for OLED display
  */
 void setupDisplay()   {   
-   pDisplay = new SSD1306_VFODisplay(NUMBER_OF_VFOS);
-   pDisplay->showVFOs(frequency_delta, currVFO, vfoList);
+   pDisplay = new SSD1306_VFODisplay(vfoList, NUMBER_OF_VFOS);
+   pDisplay->showVFOs(frequency_delta, currVFO);
 }
 
 /**

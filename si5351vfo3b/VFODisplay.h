@@ -4,7 +4,7 @@
 /**
  * @file
  * @author  Mike Aiello N2HTT <n2htt@arrl.net>
- * @version 1.0
+ * @version 1.1
  *
  * @section LICENSE
  *
@@ -31,10 +31,11 @@
 /**
  * display character constants
  */
-#define INDICATOR_CHARACTER              16   // right pointing triangle
-#define DISABLED_CHARACTER               126  // tilde
-#define FREQ_DELTA_CHARACTER             127  // up pointing triangle
-#define LBL_SEP_CHAR                     ":" 
+#define DISPLAY_BUFFER_MAX               16    // buffer for intermediate strings
+#define INDICATOR_CHARACTER              0xb6  // right pointing triangle
+#define DISABLED_CHARACTER               0xa1  // empty square
+#define NOT_SELECTED                     ' '   // space
+#define FREQ_DELTA_CHARACTER             0xb3  // up pointing triangle
 #define HEADING_PREFIX                   "SI5351 N2HTT "
 
 
@@ -44,36 +45,34 @@
  */
 class VFODisplay {
 protected: 
-
-   int mi_number_of_vfos;
-
+   char            ms_buffer[DISPLAY_BUFFER_MAX];
+   unsigned long   ml_freq;
+   unsigned long   ml_freq_delta;
    
+   VFODefinition **mpp_vfos;
+   int             mi_displayFunc;     
+   int             mi_number_of_vfos;
+   int             mi_currentVFO;
+   int             mi_displayLine;
+   boolean         mb_enabled;
+    
    /**
-    * Constructor 
+    * Constructor     
     * 
     * @param  num_vfos number of vfos to show in display
     */
-   VFODisplay(int num_vfos)
-   : mi_number_of_vfos(num_vfos)
-   {}
+   VFODisplay(VFODefinition **vfos, int num_vfos)
+   : mpp_vfos(vfos)
+   , mi_number_of_vfos(num_vfos)
+   , ml_freq(0)
+   , ml_freq_delta(0)
+   , mi_currentVFO(0)
+   , mi_displayLine(0)
+   , mi_displayFunc(0)
+   , mb_enabled(false)
+   {ms_buffer[0]=0;}
    
 public:
-   
-   /**
-    * abstract method 
-    * show indicator for selected vfo
-    * @param  currentVFO subscript of selected vfo in list (from 0)
-    * @param  displayLine subscript of display line being constructed
-    * @param  isEnabled enabled/disabled status of current vfo
-    */
-   virtual void displayIndicator(int currentVFO, int displayLine, boolean isEnabled) = 0;
-    
-   /**
-    * abstract method 
-    * display a frequency formatted as nnn.nnnnn 
-    * @param  freq frequency in Hz
-    */
-   virtual void displayFrequencyMHz(unsigned long freq) = 0;
     
    /**
     * abstract method 
@@ -82,14 +81,14 @@ public:
     * @param  currentVFO subscript of selected vfo in list (from 0)
     * @param  vfoList pointer to array holding vfo list
     */
-   virtual void showVFOs(long f_delta, int currentVFO, VFODefinition **vfoList) = 0;
+   virtual void showVFOs(unsigned long f_delta, short currentVFO) = 0;
     
    /**
     * abstract method 
     * display new value of frequency change increment
     * @param  f_delta new frequency change increment
     */
-   virtual void showFreqDeltaDisplay(long f_delta) = 0;
+   virtual void showFreqDeltaDisplay(unsigned long f_delta) = 0;
 };   
    
 #endif // VFODISPLAY_H

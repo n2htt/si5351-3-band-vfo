@@ -64,14 +64,13 @@
  * See the include files for other configurable parameters.
  *
  * Libraries used in this sketch are:
- *  - DigitalPin       - object representation of a digital pin (supplied)
- *  - DigitalPulse     - object that manages short/long press 
- *                       determination (supplied) 
- *  - Adafruit SSD1306 - interface for the SDD1306 I2C OLED display. This is 
+ *  - Google U8glib    - interface for the SDD1306 I2C OLED display. This is 
  *                       not supplied, but is available here:
+ *                       https://code.google.com/p/u8glib/
  *
  *  - Etherkit SI5351  - interface for the SI5351a clock chip, 
  *                       not supplied but available here:
+ *                       https://github.com/etherkit/Si5351Arduino
  *
  * Two object wrappers are supplied for the SSD1306 display, and 
  * the SI5351. Each wrapper is constructed with a generic 
@@ -103,11 +102,21 @@
 #include <Wire.h>
 #include <SPI.h>
 #include <si5351.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
+#include <U8glib.h>
 
-#include <DigitalPin.h>
-#include <DigitalPulse.h>
+/**
+ * Pared-down implementation of DigitalPin/DigitalPulse
+ * Uncomment the definition of the macro USE_SIMPLE_DIGITAL_PIN
+ * below to use a non-library, local implementation of the 
+ * DigitalPin and DigitalPulse classes.
+ * 
+ * The local versions of these classes have all unused 
+ * functionality removed, yielding the minimum flash memory
+ * size.
+ */
+#include "SimpleDigitalInputPin.h"
+#include "SimpleDigitalPulse.h"
+#define INPUT_PIN_TYPE SimpleDigitalInputPin
 
 #include "si5351_VFODefinition.h"
 #include "SSD1306_VFODisplay.h"
@@ -148,9 +157,9 @@
 /**
  * delay times
  */
-#define BUTTON_DEBOUNCE_WAIT_MILS        10
+#define BUTTON_DEBOUNCE_WAIT_MILS         5
 #define SETUP_DELAY_MILS                  5
-#define LOOP_DELAY_MILS                  50
+#define LOOP_DELAY_MILS                  20
 #define FREQ_DELTA_LATENCY_MILS         900
 
 /**
@@ -163,10 +172,10 @@ Si5351 si5351;
  */
 VFODefinition *vfoList[NUMBER_OF_VFOS];
 
-int currVFO;
+short currVFO;
 VFODefinition *pCurrentVFO;
-long frequency_delta;
-int freq_delta_display_time;
+short freq_delta_display_time;
+unsigned long frequency_delta;
 
 /**
  * display object
@@ -175,14 +184,14 @@ VFODisplay *pDisplay;
 
 /**
  * digital pins (reading button presses)
- */
-DigitalInputPin VFOSelectPin( VFO_SELECTOR_PIN
+ */ 
+INPUT_PIN_TYPE VFOSelectPin( VFO_SELECTOR_PIN
                                 , INPUT_PULLUP
                                 , BUTTON_DEBOUNCE_WAIT_MILS
                                 , DIGITAL_PIN_INIT_STATE_HIGH
                                 , DIGITAL_PIN_INVERTING);
 
-DigitalInputPin FrequencyDeltaSelectPin( FRQ_DELTA_SELECTOR_PIN
+INPUT_PIN_TYPE FrequencyDeltaSelectPin( FRQ_DELTA_SELECTOR_PIN
                                        , INPUT_PULLUP
                                        , BUTTON_DEBOUNCE_WAIT_MILS
                                        , DIGITAL_PIN_INIT_STATE_HIGH
@@ -245,7 +254,7 @@ void loop() {
             pCurrentVFO->start();
  
             // repaint the vfoList display
-            pDisplay->showVFOs(frequency_delta, currVFO, vfoList);
+            pDisplay->showVFOs(frequency_delta, currVFO);
 
             // reset pin
             VFOSelectPin.setCurrentPinMode(PIN_MODE_IDLE);
@@ -259,7 +268,7 @@ void loop() {
             pCurrentVFO->start();
 
             // repaint the vfoList display
-            pDisplay->showVFOs(frequency_delta, currVFO, vfoList);
+            pDisplay->showVFOs(frequency_delta, currVFO);
 
             // reset pin
             VFOSelectPin.setCurrentPinMode(PIN_MODE_IDLE);
@@ -273,8 +282,10 @@ void loop() {
       switch (mode) {
          case PIN_MODE_SHORT_PULSE:
             // short pulse - change frequency delta
-            frequency_delta *= FREQ_DELTA_MULT;
-            if (frequency_delta > FREQ_DELTA_MAX) {
+            if (frequency_delta < FREQ_DELTA_MAX) {
+               frequency_delta *= FREQ_DELTA_MULT;
+            }
+            else {
                frequency_delta = FREQ_DELTA_MIN;
             }
 
@@ -298,7 +309,7 @@ void loop() {
             }
 
             // repaint the vfoList display
-            pDisplay->showVFOs(frequency_delta, currVFO, vfoList);
+            pDisplay->showVFOs(frequency_delta, currVFO);
             
             // reset pin
             FrequencyDeltaSelectPin.setCurrentPinMode(PIN_MODE_IDLE);
@@ -315,15 +326,15 @@ void loop() {
 
       // repaint the vfoList display if freq display time exhausted
       if (freq_delta_display_time <= 0) {
-         pDisplay->showVFOs(frequency_delta, currVFO, vfoList);
+         pDisplay->showVFOs(frequency_delta, currVFO);
       }
    }
   
    // re-display frequencies if encoder has made changes
    if (updateSelectedFrequencyValue()) {
-      pDisplay->showVFOs(frequency_delta, currVFO, vfoList);
+      pDisplay->showVFOs(frequency_delta, currVFO);
    }
-
+   
    delay(LOOP_DELAY_MILS);
 }
 

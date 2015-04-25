@@ -1,10 +1,10 @@
-#ifndef _DIGITALPULSE_H_
-#define _DIGITALPULSE_H_
+#ifndef _SIMPLEDIGITALPULSE_H_
+#define _SIMPLEDIGITALPULSE_H_
 
 /**
  * @file
  * @author  Mike Aiello N2HTT <n2htt@arrl.net>
- * @version 1.0
+ * @version 1.1
  *
  * @section LICENSE
  *
@@ -21,38 +21,26 @@
  *
  * @section DESCRIPTION
  *
- * This file contains the definition of DigitalPulse. This struct
+ * This file contains the definition of SimpleDigitalPulse. This struct
  * holds information describing a pulse read from an input pin.
  */
  
 #include <Arduino.h> 
 
 /**
-* constants for pulse description
-*/
-#define PULSE_DESCRIPTION_MAX              32
-#define PULSE_VALUE_BUFFER_MAX             16
-#define PULSE_DESCRIPTION_VALUE_DELIMITER  '|'
-
-/**
 * constants for pulse threshold definitions 
 */
-#define SHORT_PRESS_MILS    100
+#define SHORT_PRESS_MILS     50
 #define LONG_PRESS_MILS    1000
 
 /**
 * struct containg digital pulse information 
 */
-struct DigitalPulse {
+struct SimpleDigitalPulse {
    /**
    * pulse start time, milliseconds since reset
    */
    long startTime;
-      
-  /**
-   * pulse end time, milliseconds since reset
-   */
-   long endTime;
       
   /**
    * computed duration of pulse in milliseconds
@@ -63,32 +51,20 @@ struct DigitalPulse {
    * flag is true if pulse is ready (has valid start/end times)
    */
    bool isValid;
-      
-  /**
-   * character buffer used to store pulse description
-   */
-   char pulseDescription[PULSE_DESCRIPTION_MAX];
-
    
   /**
-   * DigitalPulse constructor
+   * SimpleDigitalPulse constructor
    * creates empty pulse object
    */
-   DigitalPulse()
-   : startTime(0), endTime(0), duration(0), isValid(false)
+   SimpleDigitalPulse()
+   : startTime(0), duration(0), isValid(false)
    {}
-      
-  /**
-   * character used to delimit pulse start/end time
-   */
-   static const char VALUE_DELIMITER;
    
   /**
    * reset pulse to cleared condition
    */
    void reset() {
       startTime = 0;
-      endTime = 0;
       duration = 0; 
       isValid = false;
    }
@@ -101,7 +77,7 @@ struct DigitalPulse {
    void setStart(long tm) {
       isValid = false;
       duration = 0;
-      endTime = startTime = tm;
+      startTime = tm;
    }
    
   /**
@@ -110,17 +86,9 @@ struct DigitalPulse {
    * @param  tm    pulse end time, milliseconds since reset
    */
    void setEnd(long tm) {
-      endTime = tm;
-      duration = endTime - startTime;
+      duration = tm - startTime;
       isValid = (duration > 0);
    }
-   
-  /**
-   * returns pulse description text
-   *
-   * @return pointer to pulse description text
-   */
-   const char * getDescription();  
 };
 
-#endif // _DIGITALPULSE_H_
+#endif // _SIMPLEDIGITALPULSE_H_

@@ -1,10 +1,10 @@
-#ifndef _DIGITALPIN_H_
-#define _DIGITALPIN_H_
+#ifndef _DIGITALPININPUT_H_
+#define _DIGITALPININPUT_H_
 
 /**
  * @file
  * @author  Mike Aiello N2HTT <n2htt@arrl.net>
- * @version 1.0
+ * @version 1.1
  *
  * @section LICENSE
  *
@@ -21,16 +21,16 @@
  *
  * @section DESCRIPTION
  *
- * This file contains class definitions for DigitalPin, and two
- * child classes, DigitalInputPin and DigitalOutputPin. These classes
+ * This file contains class definitions for SimpleDigitalPin, and two
+ * child classes, SimpleDigitalInputPin and . These classes
  * encapsulate Arduino hardware pin behavior
  */
  
 #include <Arduino.h> 
-#include <DigitalPulse.h>
+#include "SimpleDigitalPulse.h"
 
 /**
- * defined constants used by DigitalPin classes
+ * defined constants used by SimpleDigitalPin classes
 */
 #define DIGITAL_PIN_INIT_STATE_LOW   LOW
 #define DIGITAL_PIN_INIT_STATE_HIGH  HIGH
@@ -42,7 +42,7 @@
 #define DIGITAL_PIN_SUPPRESS_SERIAL  false
 
 /**
- * enum for defined input pin pulse modes
+ * input pin pulse modes
  * 
  * pin can be IDLE
  * 
@@ -54,17 +54,15 @@
  * 
  *  or just be confused. (UNKNOWN) 
 */
-enum InputPinMode{
-	    PIN_MODE_UNKNOWN
-	   ,PIN_MODE_IDLE
-	   ,PIN_MODE_SHORT_PULSE
-	   ,PIN_MODE_LONG_PULSE
-}; 
+#define PIN_MODE_UNKNOWN      0
+#define PIN_MODE_IDLE         1
+#define PIN_MODE_SHORT_PULSE  2
+#define PIN_MODE_LONG_PULSE   3
 
 /**
-* This is the base class for input and output hardware pins
+* This is the base class for input hardware pins
 */
-class DigitalPin {
+class SimpleDigitalPin {
 protected:   
    
    /**
@@ -88,7 +86,7 @@ protected:
 	int  logicalState;
    
    /**
-   * records intial state of the pin
+   * records initial state of the pin
    * used when the pin is forced to idle mode
    */
    int  initialState;
@@ -98,19 +96,8 @@ protected:
    * to the complement of the physical state
    */
 	bool invertSense;
-   
-   /**
-   * this flag enables/disables all pin behaviors
-   */
-   bool enabled;
     
 public:   
-  /**
-   * enables/disables output of pulse start/end
-   * to the serial port
-   */
-   static bool writePulsesToSerialEnabled;
-   
   /**
    * returns complement of input state
    * from the set of values {LOW,HIGH}
@@ -121,20 +108,6 @@ public:
    * performs hardware pin initializations
    */
    virtual void initialize();
-   
-  /**
-   * disables all pin behaviors
-   */
-   virtual void suspend() {
-      enabled = false;
-   }
-   
-  /**
-   * enables all pin behaviors
-   */
-   virtual void resume() {
-      enabled = true;
-   }
    
   /**
    * returns physical state of pin
@@ -177,103 +150,19 @@ public:
    }
    
   /**
-   * DigitalPin Constructor
+   * SimpleDigitalPin Constructor
    *
    * @param  pn       pin number
    * @param  md       pin mode
    * @param  ini_st   initial pin state
    * @param  invert   is pin sense inverted?
    */
-   DigitalPin (int pn, int md, int ini_st, bool invert)
+   SimpleDigitalPin (int pn, int md, int ini_st, bool invert)
    : pinNumber(pn)
    , mode(md)
    , state(ini_st)
    , initialState(ini_st)
    , invertSense(invert)
-   , enabled(true)
-   {}
-};
-
-/**
-* This class represents output hardware pins and only allows
-* output operations on the pin.
-*/
-class DigitalOutputPin : public DigitalPin {
-protected:
-   
-public:   
-
-  /**
-   * performs hardware pin initializations
-   */
-   virtual void initialize();
-   
-  /**
-   * disables all pin behaviors
-   */
-   virtual void suspend();
-   
-  /**
-   * converts input values to {LOW, HIGH}
-   * stores input value to pin logical state
-   * writes stored logical state to pin
-   * 
-   * @param  val      value to set/write
-   */
-   void writeLogicalValue(int val) {
-      setLogicalState(val); 
-      writeState();
-   }
-   
-  /**
-   * writes stored physical state to pin
-   */
-   void writeState() {
-      digitalWrite(pinNumber, getState());
-   }
-   
-  /**
-   * converts input values to {LOW, HIGH}
-   * stores input value to pin physical state
-   * writes stored physical state to pin
-   * 
-   * @param  val      value to set/write
-   */
-   void writeValue(int val) {
-      setState(val); 
-      writeState();
-   }
-   
-  /**
-   * performs an output pulse on the pin
-   * restoring the pin to the state it was in
-   * before the pulse 
-   * 
-   * @param  pulse_width_mils  width of pulse in milliseconds
-   * @param  hang_time_mils    time to wait in intial state
-   *                           after pulse is performed, milliseconds
-   * @param  lead_time_mils    time to wait in intial state
-   *                           before pulse is performed, milliseconds
-   * @param  initial_state     pin is set to this state before pulse
-   *                           is performed; the pulse itself is 
-   *                           performed by raising the pin to the
-   *                           complementary state. Default value LOW.
-   */
-   void outputPulse(unsigned int pulse_width_mils
-                   ,unsigned int hang_time_mils = 0
-                   ,unsigned int lead_time_mils = 0
-                   ,int initial_state = LOW);
-                                  
-  /**
-   * DigitalPin Constructor
-   *
-   * @param  pn       pin number
-   * @param  ini_st   initial pin state
-   */
-   DigitalOutputPin (int pn
-                   , int ini_st
-                   , bool invert = DIGITAL_PIN_NON_INVERTING)
-   : DigitalPin(pn, OUTPUT, ini_st, invert)
    {}
 };
 
@@ -281,7 +170,7 @@ public:
 * This class represents input hardware pins and only allows
 * input operations on the pin.
 */
-class DigitalInputPin : public DigitalPin {
+class SimpleDigitalInputPin : public SimpleDigitalPin {
 protected:
    
   /**
@@ -297,7 +186,7 @@ protected:
   /**
    * stores the last pulse registered on the pin
    */
-   DigitalPulse pulse;
+   SimpleDigitalPulse pulse;
    
   /**
    * stores current pulse mode of pin {IDLE, SHORT_PULSE, LONG_PULSE}
@@ -313,12 +202,7 @@ protected:
    * flag is true if physical state of pin has changed since last read
    */
 	bool stateChanged;
-	
-  /**
-   * enable/disables writing pulse description to serial port
-   */
-   bool writeToSerial;
-	
+   
   /**
    * updates stored pulse on a state change
    */
@@ -326,23 +210,10 @@ protected:
    
 public:   
   /**
-   * disables all pin behaviors
-   */
-   virtual void suspend();
-   
-  /**
    * reads physical pin state and applies debounce logic
    */
    void determinePinState();
-   
-  /**
-   * forces pin state to value, and performs logic as though
-   * the forced state had just been read
-   * 
-   * @param  lstate    the logical state to force on the pin
-   */
-   void forceLogicalPinState(int lstate);   
- 
+    
   /**
    * An input pin is always in one of three modes, depending on 
    * the last pulse read on the pin: IDLE, SHORT_PULSE and LONG_PULSE
@@ -362,34 +233,13 @@ public:
    bool readInputPulseMode();
    
   /**
-   * sets indication on the output pin to correspond to the
-   * physical state of the input pin
-   * 
-   * @param  outputPin    the output pin to display state on
-   */
-   void indicate(DigitalOutputPin &outputPin);
-   
-  /**
-   * sets indication on the output pin to correspond to the
-   * inverse of the physical state of the input pin
-   * 
-   * @param  outputPin    the output pin to display state on
-   */
-   void indicateInverse(DigitalOutputPin &outputPin);
-   
-  /**
    * returns last pulse read on pin
    * 
    * @return  the current stored pulse
    */
-   DigitalPulse getLastPulse() const {
+   SimpleDigitalPulse getLastPulse() const {
       return pulse;
    }
-   
-  /**
-   * writes pulse description to the serial port
-   */
-   void writePulseToSerial();
    
   /**
    * returns current pulse mode
@@ -399,8 +249,7 @@ public:
    int getCurrentPinMode() const {
        return currentPinMode;
     }
-
-   
+    
   /**
    * sets pulse mode on pin
    * 
@@ -417,32 +266,28 @@ public:
    { return stateChanged;}
    
   /**
-   * DigitalPin Constructor
+   * SimpleDigitalPin Constructor
    *
    * @param  pn           pin number
    * @param  md           pin mode
    * @param  dbt          debounce threshold, milliseconds
    * @param  ini_st       initial pin state
    * @param  invert       is pin sense inverted?
-   * @param  write_to_ser should this pin write pulse description to serial
    */
-   DigitalInputPin (int pn
+   SimpleDigitalInputPin (int pn
                   , int md
                   , int dbt
                   , int ini_st
-                  , bool invert = DIGITAL_PIN_NON_INVERTING
-                  , bool write_to_ser = false)
-   : DigitalPin (pn, md, ini_st, invert)
+                  , bool invert = DIGITAL_PIN_NON_INVERTING)
+   : SimpleDigitalPin (pn, md, ini_st, invert)
    , lastReadTime(0L)
    , debounceThreshold(dbt)
    , lastReading(ini_st)
    , stateChanged(false)
    , currentPinMode(PIN_MODE_IDLE)
-   , writeToSerial(write_to_ser)
    { 
       setState(state); 
    }
 };
 
-   
-#endif // _DIGITALPIN_H_
+#endif // _DIGITALPININPUT_H_
