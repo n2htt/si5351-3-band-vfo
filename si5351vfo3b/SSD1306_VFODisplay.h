@@ -71,7 +71,7 @@ protected:
     */
    void displayVFOScreen() {
       int ix = 0;
-      int iy = 13;
+      int iy = 11;
 
       // small yellow header line
       mp_display->setFont(u8g_font_6x12);
