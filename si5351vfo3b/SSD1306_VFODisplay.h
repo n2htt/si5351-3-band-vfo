@@ -42,9 +42,13 @@
 class SSD1306_VFODisplay : public VFODisplay {
 protected:   
    /**
-    * pointer to externally defined Adafruit_SSD1306 object
+    * pointer to externally defined SSD1306 display object
     */
+#ifdef USE_SMALLER_SSD1306_128X64_BUFFER
    U8GLIB_SSD1306_128X64 *mp_display;
+#else
+   U8GLIB_SSD1306_128X64_2X *mp_display;   
+#endif
    
    /**
     * select indicator character for selected vfo
@@ -153,8 +157,12 @@ public:
     */
    SSD1306_VFODisplay(VFODefinition **vfos, int num_vfos)
    : VFODisplay(vfos, num_vfos), mp_display(0)
-   {
+   {  
+#ifdef USE_SMALLER_SSD1306_128X64_BUFFER
       mp_display = new U8GLIB_SSD1306_128X64(U8G_I2C_OPT_NONE|U8G_I2C_OPT_DEV_0);	// I2C / TWI;
+#else
+      mp_display = new U8GLIB_SSD1306_128X64_2X(U8G_I2C_OPT_NONE|U8G_I2C_OPT_DEV_0);	// I2C / TWI;
+#endif      
 
       // assign default color value
       if ( mp_display->getMode() == U8G_MODE_R3G3B2 ) {

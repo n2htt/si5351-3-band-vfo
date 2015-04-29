@@ -99,6 +99,14 @@
  *    and doxygen.
  */
  
+ /**
+  * The U8glib trades off speed of display refresh for the amount of
+  * SRAM used by the page buffers. If you are tight on space in your
+  * sketch, uncomment the line below to use the smaller, but slower
+  * page buffer.
+ */
+//#define USE_SMALLER_SSD1306_128X64_BUFFER
+ 
 #include <Wire.h>
 #include <SPI.h>
 #include <si5351.h>
