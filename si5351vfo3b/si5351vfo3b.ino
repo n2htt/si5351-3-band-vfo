@@ -20,7 +20,7 @@
 /**
  * @file
  * @author  Mike Aiello N2HTT <n2htt@arrl.net>
- * @version 1.0
+ * @version 1.3
  *
  * @section LICENSE
  *
@@ -100,17 +100,39 @@
  */
  
  /**
+  * Uncomment the two lines below to use the U8Glib library
+  * with the SSD1306 28x64 OLED display
+ */
+#define USE_U8GLIB_LIBRARY
+#define USE_SSD1306_128X64_DISPLAY
+
+ /**
   * The U8glib trades off speed of display refresh for the amount of
   * SRAM used by the page buffers. If you are tight on space in your
   * sketch, uncomment the line below to use the smaller, but slower
   * page buffer.
  */
 //#define USE_SMALLER_SSD1306_128X64_BUFFER
- 
+
+ /**
+  * Uncomment the two lines below to use the LiquidCrystal library
+  * with the 20 x 4 LCD display
+ */
+//#define USE_LIQUIDCRYSTAL_LIBRARY
+//#define USE_LCD_20X4_DISPLAY 
+
 #include <Wire.h>
 #include <SPI.h>
+
 #include <si5351.h>
+
+#ifdef USE_U8GLIB_LIBRARY
 #include <U8glib.h>
+#endif
+
+#ifdef USE_LIQUIDCRYSTAL_LIBRARY
+#include <LiquidCrystal_I2C.h>
+#endif
 
 /**
  * Pared-down implementation of DigitalPin/DigitalPulse
@@ -127,7 +149,20 @@
 #define INPUT_PIN_TYPE SimpleDigitalInputPin
 
 #include "si5351_VFODefinition.h"
-#include "SSD1306_VFODisplay.h"
+
+#ifdef USE_U8GLIB_LIBRARY
+   #ifdef USE_SSD1306_128X64_DISPLAY
+      #include "SSD1306_U8GLIB_VFODisplay.h"
+   #endif
+#endif
+
+#ifdef USE_LIQUIDCRYSTAL_LIBRARY
+   #ifdef USE_LCD_20X4_DISPLAY
+      #include "LCD2004_LCDLIB_VFODisplay.h"
+   #endif
+#endif
+
+
 
 /**
  * hardware pin definitions

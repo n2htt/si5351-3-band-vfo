@@ -91,7 +91,19 @@ void setupEncoder()   {
  * setup for OLED display
  */
 void setupDisplay()   {   
-   pDisplay = new SSD1306_VFODisplay(vfoList, NUMBER_OF_VFOS);
+#ifdef USE_U8GLIB_LIBRARY
+   #ifdef USE_SSD1306_128X64_DISPLAY
+      pDisplay = new SSD1306_VFODisplay(vfoList, NUMBER_OF_VFOS);
+   #endif
+#endif
+
+#ifdef USE_LIQUIDCRYSTAL_LIBRARY
+   #ifdef USE_LCD_20X4_DISPLAY
+      pDisplay = new LCD2004_LCDLib_VFODisplay(vfoList, NUMBER_OF_VFOS);
+   #endif
+#endif   
+   
+   
    pDisplay->showVFOs(frequency_delta, currVFO);
 }
 

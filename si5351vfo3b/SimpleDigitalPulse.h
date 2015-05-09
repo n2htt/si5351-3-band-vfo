@@ -4,7 +4,7 @@
 /**
  * @file
  * @author  Mike Aiello N2HTT <n2htt@arrl.net>
- * @version 1.1
+ * @version 1.3
  *
  * @section LICENSE
  *

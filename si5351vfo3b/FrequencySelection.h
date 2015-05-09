@@ -27,8 +27,8 @@
  * the macros defined below. Use the smallest values that give smooth
  * operation of your encoder without jitter in the frequency values.
  * Note that the movement threshold value is a divisor of the encoder's
- * ppr; the default value of 2 essentially halves the ppr of your. The
- * minimum value for this parameter is 1 - a value of 1 turns off
+ * ppr; the default value of 2 essentially halves the ppr of your encoder. 
+ * The minimum value for this parameter is 1 -- a value of 1 turns off
  * the software debounce feature.
  */
  

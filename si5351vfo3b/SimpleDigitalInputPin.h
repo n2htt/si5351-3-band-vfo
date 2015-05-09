@@ -21,9 +21,9 @@
  *
  * @section DESCRIPTION
  *
- * This file contains class definitions for SimpleDigitalPin, and two
- * child classes, SimpleDigitalInputPin and . These classes
- * encapsulate Arduino hardware pin behavior
+ * This file contains class definitions for SimpleDigitalPin, and its
+ * child class SimpleDigitalInputPin. These classes
+ * encapsulate Arduino hardware pin behavior for input.
  */
  
 #include <Arduino.h> 

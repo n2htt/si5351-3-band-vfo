@@ -4,7 +4,7 @@
 /**
  * @file
  * @author  Mike Aiello N2HTT <n2htt@arrl.net>
- * @version 1.0
+ * @version 1.3
  *
  * @section LICENSE
  *
@@ -23,7 +23,10 @@
  *
  * This file contains class definitions for si5351_VFODefinition. 
  * This class implements the methods defined in base class
- * VFODefinition, using the Etherkit SI5351 library.
+ * VFODefinition, using the Etherkit SI5351 library, which may be
+ * found here:
+ * 
+ * https://github.com/etherkit/Si5351Arduino
  */
  
 #include <Arduino.h> 

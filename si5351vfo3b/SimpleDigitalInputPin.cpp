@@ -19,7 +19,7 @@
  *
  * @section DESCRIPTION
  *
- * This file contains class implementations for SimpleDigitalPin, and
+ * This file contains class implementations for SimpleDigitalPin, and its
  * child class, SimpleDigitalInputPin. These classes
  * encapsulate Arduino hardware input pin behavior
  */

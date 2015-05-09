@@ -4,7 +4,7 @@
 /**
  * @file
  * @author  Mike Aiello N2HTT <n2htt@arrl.net>
- * @version 1.1
+ * @version 1.3
  *
  * @section LICENSE
  *
@@ -50,11 +50,15 @@ protected:
    unsigned long   ml_freq_delta;
    
    VFODefinition **mpp_vfos;
-   int             mi_displayFunc;     
    int             mi_number_of_vfos;
    int             mi_currentVFO;
    int             mi_displayLine;
    boolean         mb_enabled;
+   
+   unsigned char   mc_indicator;
+   unsigned char   mc_disabled;
+   unsigned char   mc_notSelected;
+   unsigned char   mc_freqDelta;
     
    /**
     * Constructor     
@@ -68,9 +72,32 @@ protected:
    , ml_freq_delta(0)
    , mi_currentVFO(0)
    , mi_displayLine(0)
-   , mi_displayFunc(0)
    , mb_enabled(false)
+   , mc_indicator(INDICATOR_CHARACTER)
+   , mc_disabled(DISABLED_CHARACTER)
+   , mc_notSelected(NOT_SELECTED)
+   , mc_freqDelta(FREQ_DELTA_CHARACTER)  
    {ms_buffer[0]=0;}
+   
+   /**
+    * select indicator character for selected vfo
+    */
+   void formatIndicator() {
+      ms_buffer[1] = 0;
+      ms_buffer[0] = ((mi_currentVFO == mi_displayLine )
+                ?((mb_enabled)
+                  ?mc_indicator:mc_disabled)
+                  :mc_notSelected);
+   }
+    
+   /**
+    * frequency formatted as nn.nnnnn 
+    */
+   void formatFrequencyMHz() {
+      long mant = ml_freq / 1000000L;
+      long dec =  (ml_freq % 1000000L) / 10L;
+      sprintf(ms_buffer, "%2lu.%05lu", mant,dec);
+   }
    
 public:
     

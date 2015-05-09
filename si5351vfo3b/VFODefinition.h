@@ -4,7 +4,7 @@
 /**
  * @file
  * @author  Mike Aiello N2HTT <n2htt@arrl.net>
- * @version 1.1
+ * @version 1.3
  *
  * @section LICENSE
  *
@@ -22,8 +22,7 @@
  * @section DESCRIPTION
  *
  * This file contains the definition of base class VFODefinition, 
- * which defines the methods needed by the three band VFO to operate
- * the SI5351 clock chip.
+ * which defines the methods needed by the three band VFO.
  */
   
 #include <Arduino.h> 
