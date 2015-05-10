@@ -93,7 +93,7 @@ void setupEncoder()   {
 void setupDisplay()   {   
 #ifdef USE_U8GLIB_LIBRARY
    #ifdef USE_SSD1306_128X64_DISPLAY
-      pDisplay = new SSD1306_VFODisplay(vfoList, NUMBER_OF_VFOS);
+      pDisplay = new SSD1306_U8glib_VFODisplay(vfoList, NUMBER_OF_VFOS);
    #endif
 #endif
 

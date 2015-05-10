@@ -1,6 +1,6 @@
 #ifndef LCD2004_LCDLIB_VFODISPLAY_H
 #define LCD2004_LCDLIB_VFODISPLAY_H
-
+t
 /**
  * @file
  * @author  Mike Aiello N2HTT <n2htt@arrl.net>
@@ -35,7 +35,7 @@
 
 /**
  * This class implements the methods defined in base class
- * VFODisplay, using the Adafruit SSD1306 I2C library.
+ * VFODisplay, using the LiquidCrystal_I2C library.
  */
 class LCD2004_LCDLib_VFODisplay : public VFODisplay {
 protected:   

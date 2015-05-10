@@ -21,7 +21,7 @@
  *
  * @section DESCRIPTION
  *
- * This file contains class definitions for SSD1306_VFODisplay. 
+ * This file contains class definitions for SSD1306_U8glib_VFODisplay. 
  * This class implements the methods defined in base class
  * VFODisplay, using the Google U8glib library, which may 
  * be found here:
@@ -40,9 +40,9 @@
 
 /**
  * This class implements the methods defined in base class
- * VFODisplay, using the Adafruit SSD1306 I2C library.
+ * VFODisplay, using the Google U8glib library.
  */
-class SSD1306_VFODisplay : public VFODisplay {
+class SSD1306_U8glib_VFODisplay : public VFODisplay {
 protected:   
    /**
     * pointer to externally defined SSD1306 display object
@@ -140,7 +140,7 @@ public:
     * @param  vfo list
     * @param  num_vfos number of vfos to show in display
     */
-   SSD1306_VFODisplay(VFODefinition **vfos, int num_vfos)
+   SSD1306_U8glib_VFODisplay(VFODefinition **vfos, int num_vfos)
    : VFODisplay(vfos, num_vfos)
    , mi_displayFunc(0)
    {  
@@ -166,7 +166,7 @@ public:
    /**
     * Destructor 
     */
-   virtual ~SSD1306_VFODisplay() 
+   virtual ~SSD1306_U8glib_VFODisplay() 
    {
    }
 
