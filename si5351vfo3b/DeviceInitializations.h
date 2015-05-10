@@ -93,13 +93,17 @@ void setupEncoder()   {
 void setupDisplay()   {   
 #ifdef USE_U8GLIB_LIBRARY
    #ifdef USE_SSD1306_128X64_DISPLAY
-      pDisplay = new SSD1306_U8glib_VFODisplay(vfoList, NUMBER_OF_VFOS);
+      pDisplay = new SSD1306_U8glib_VFODisplay(vfoList
+                                             , NUMBER_OF_VFOS
+                                             , DISPLAY_HEADER_LINE);
    #endif
 #endif
 
 #ifdef USE_LIQUIDCRYSTAL_LIBRARY
    #ifdef USE_LCD_20X4_DISPLAY
-      pDisplay = new LCD2004_LCDLib_VFODisplay(vfoList, NUMBER_OF_VFOS);
+      pDisplay = new LCD2004_LCDLib_VFODisplay(vfoList
+                                             , NUMBER_OF_VFOS
+                                             , DISPLAY_HEADER_LINE);
    #endif
 #endif   
    

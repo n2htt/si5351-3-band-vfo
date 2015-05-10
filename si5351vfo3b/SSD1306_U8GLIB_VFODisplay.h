@@ -60,23 +60,26 @@ protected:
     */
    void displayVFOScreen() {
       int ix = 0;
-      int iy = 11;
-
-      // small yellow header line
-      mp_display->setFont(u8g_font_6x12);
-      mp_display->setPrintPos(ix,iy);
-      mp_display->print(HEADING_PREFIX);
-      mp_display->print(ml_freq_delta, DEC);
+      int iy = 13;
       
-      // move body lines down a bit
-      ++iy;
-
+      if (mb_show_heading_line) {
+         iy = 11;
+         
+         // small yellow header line
+         mp_display->setFont(u8g_font_6x12);
+         mp_display->setPrintPos(ix,iy);
+         mp_display->print(HEADING_PREFIX);
+         mp_display->print(ml_freq_delta, DEC);
+         
+         // move to next line
+         iy += 18;
+      }
+      
       for (int ii = 0; ii<mi_number_of_vfos; ++ii) {
          mi_displayLine = ii;
          mb_enabled = mpp_vfos[mi_displayLine]->isEnabled();
          ml_freq = mpp_vfos[mi_displayLine]->getFrequency();
          
-         iy += 17;
          mp_display->setPrintPos(ix,iy);
          
          if (mi_currentVFO == mi_displayLine ) {
@@ -92,6 +95,9 @@ protected:
          mp_display->setFont(u8g_font_10x20);
          formatFrequencyMHz();  
          mp_display->print(ms_buffer);
+         
+         // move to next line
+         iy += 17;
       }
    }
    
@@ -140,8 +146,10 @@ public:
     * @param  vfo list
     * @param  num_vfos number of vfos to show in display
     */
-   SSD1306_U8glib_VFODisplay(VFODefinition **vfos, int num_vfos)
-   : VFODisplay(vfos, num_vfos)
+   SSD1306_U8glib_VFODisplay(VFODefinition **vfos
+                           , int num_vfos
+                           , boolean show_header)
+   : VFODisplay(vfos, num_vfos, show_header)
    , mi_displayFunc(0)
    {  
 #ifdef USE_SMALLER_SSD1306_128X64_BUFFER

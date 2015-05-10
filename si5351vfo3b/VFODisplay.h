@@ -37,6 +37,8 @@
 #define NOT_SELECTED                     ' '   // space
 #define FREQ_DELTA_CHARACTER             0xb3  // up pointing triangle
 #define HEADING_PREFIX                   "SI5351 N2HTT "
+#define SHOW_HEADING                     true
+#define NO_HEADING                       false
 
 
 /**
@@ -54,18 +56,22 @@ protected:
    int             mi_currentVFO;
    int             mi_displayLine;
    boolean         mb_enabled;
+   boolean         mb_show_heading_line;
    
    unsigned char   mc_indicator;
    unsigned char   mc_disabled;
    unsigned char   mc_notSelected;
    unsigned char   mc_freqDelta;
+   
     
    /**
     * Constructor     
     * 
     * @param  num_vfos number of vfos to show in display
     */
-   VFODisplay(VFODefinition **vfos, int num_vfos)
+   VFODisplay(VFODefinition **vfos
+            , int num_vfos
+            , boolean show_header = SHOW_HEADING)
    : mpp_vfos(vfos)
    , mi_number_of_vfos(num_vfos)
    , ml_freq(0)
@@ -73,6 +79,7 @@ protected:
    , mi_currentVFO(0)
    , mi_displayLine(0)
    , mb_enabled(false)
+   , mb_show_heading_line(show_header)
    , mc_indicator(INDICATOR_CHARACTER)
    , mc_disabled(DISABLED_CHARACTER)
    , mc_notSelected(NOT_SELECTED)

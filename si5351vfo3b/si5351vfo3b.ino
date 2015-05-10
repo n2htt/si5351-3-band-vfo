@@ -47,17 +47,19 @@
  *  - I2C bus support for SI5351 and an OLED 128x64 pixel display (0.96")
  *
  * The prototype was tested on:
- *  - Arduino Mega 2560
+ *  - Arduino Mega 2560 & Uno R3
  *  - Etherkit SI5351a breakout board
  *  - Bournes mechanical encoder, 24 ppr with momentary contact switch
  *  - SPST momentary pushbutton switch
  *  - SDD1306 I2C OLED display
+ *  - 20x4 line LCD with I2C adapter
  *
  * The macros immediately following this description configure all the 
  * hardware options for the VFO. Configurable items include:
  *  - Hardware pin assignments
  *  - VFO frequency settings
  *  - Number of VFOs
+ *  - Whether to display a heading line
  *  - Range of frequency increments
  *  - Other timing parameters
  *
@@ -68,11 +70,16 @@
  *                       not supplied, but is available here:
  *                       https://code.google.com/p/u8glib/
  *
+ *  - F Malpartida
+ *    LiquidCrystal_I2C- interface for the 20x4 LCD display with I2C. This is 
+ *                       not supplied, but is available here:
+ *                       https://bitbucket.org/fmalpartida/new-liquidcrystal/downloads
+ *
  *  - Etherkit SI5351  - interface for the SI5351a clock chip, 
  *                       not supplied but available here:
  *                       https://github.com/etherkit/Si5351Arduino
  *
- * Two object wrappers are supplied for the SSD1306 display, and 
+ * Two object wrappers are supplied for the display, and 
  * the SI5351. Each wrapper is constructed with a generic 
  * abstract base class that defines the methods used by the sketch, 
  * and then a hardware specific class that uses the appropriate third 
@@ -80,9 +87,10 @@
  * This architecture will make it easier to adapt the sketch to use
  * other harware or libraries in the future. The wrappers classes are:
  *
- * Base class       Implementation class
+ * Base class       Implementation class(es)
  * VFODefinition    si5351_VFODefinition
- * VFODisplay       SSD1306_VFODisplay
+ * VFODisplay       SSD1306_U8glib_VFODisplay
+ *                  LCD2004_LCDLib_VFODisplay
  *
  * Some notes about program structure:
  * 1. I would have normally included the hardware specific library
@@ -99,10 +107,19 @@
  *    and doxygen.
  */
  
- /**
-  * Uncomment the two lines below to use the U8Glib library
-  * with the SSD1306 28x64 OLED display
+/**
+ * Uncomment the two lines below to use the LiquidCrystal library
+ * with the 20 x 4 LCD display. If these are uncommented, be sure 
+ * that the lines for the SSD106 display are commented out
  */
+//#define USE_LIQUIDCRYSTAL_LIBRARY
+//#define USE_LCD_20X4_DISPLAY 
+
+/**
+  * Uncomment the two lines below to use the U8Glib library
+  * with the SSD1306 28x64 OLED display. If these are uncommented, 
+  * be sure that the lines for the 20 x 4 LCD display are commented out
+  */
 #define USE_U8GLIB_LIBRARY
 #define USE_SSD1306_128X64_DISPLAY
 
@@ -113,13 +130,6 @@
   * page buffer.
  */
 //#define USE_SMALLER_SSD1306_128X64_BUFFER
-
- /**
-  * Uncomment the two lines below to use the LiquidCrystal library
-  * with the 20 x 4 LCD display
- */
-//#define USE_LIQUIDCRYSTAL_LIBRARY
-//#define USE_LCD_20X4_DISPLAY 
 
 #include <Wire.h>
 #include <SPI.h>
@@ -162,7 +172,14 @@
    #endif
 #endif
 
-
+/**
+ * The following two lines control whether a heading
+ * line is shown on the display. Uncomment the 
+ * setting you want. The no heading display is
+ * intended primarily for 2 line LCD displays
+ */
+//#define DISPLAY_HEADER_LINE      NO_HEADING
+#define DISPLAY_HEADER_LINE    SHOW_HEADING
 
 /**
  * hardware pin definitions
@@ -179,6 +196,13 @@
 #define FREQ_DELTA_MAX                10000
 #define FREQ_DELTA_MIN                   10
 #define FREQ_DELTA_MULT                  10
+
+/**
+ * The following two lines control how many 
+ * VFOs the sketch will control - maximum 3. 
+ * You can reduce the number of VFOs if you are
+ * using a display with fewer than 3 lines
+ */
 #define NUMBER_OF_VFOS                    3
 #define STARTING_VFO                      1
 

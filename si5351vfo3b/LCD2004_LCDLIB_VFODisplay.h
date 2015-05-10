@@ -1,6 +1,6 @@
 #ifndef LCD2004_LCDLIB_VFODISPLAY_H
 #define LCD2004_LCDLIB_VFODISPLAY_H
-t
+
 /**
  * @file
  * @author  Mike Aiello N2HTT <n2htt@arrl.net>
@@ -48,16 +48,20 @@ protected:
     * show vfos display method 
     */
    void displayVFOScreen() {
-      mp_display->setCursor(0, 0); // Start at character 0, line 0
+      short int screenLine = 0;
+      
+      if (mb_show_heading_line) {
+      mp_display->setCursor(0, screenLine++); // Start at character 0, line 0
       mp_display->print(HEADING_PREFIX);
       mp_display->print(ml_freq_delta, DEC);
+      }
       
       for (int ii = 0; ii<mi_number_of_vfos; ++ii) {
          mi_displayLine = ii;
          mb_enabled = mpp_vfos[mi_displayLine]->isEnabled();
          ml_freq = mpp_vfos[mi_displayLine]->getFrequency();
          
-         mp_display->setCursor(11, ii+1); // Start at character 0, line ii+1
+         mp_display->setCursor(11, screenLine++); // Start at character 0, line ii+1
 
          formatIndicator();
          mp_display->write(ms_buffer[0]);
@@ -71,11 +75,11 @@ protected:
     * show vfos display method 
     */
    void displayFrequencyDeltaScreen() {
-      mp_display->setCursor(0, 1); // Start at character 0, line 1
+      mp_display->setCursor(0, 0); // Start at character 0, line 1
       mp_display->write(mc_freqDelta);
       mp_display->print(" freq =");
       
-      mp_display->setCursor(0, 2); // Start at character 0, line 2
+      mp_display->setCursor(0, 1); // Start at character 0, line 2
       mp_display->print(ml_freq_delta, DEC);
    }
    
@@ -86,8 +90,10 @@ public:
     * @param  vfo list
     * @param  num_vfos number of vfos to show in display
     */
-   LCD2004_LCDLib_VFODisplay(VFODefinition **vfos, int num_vfos)
-   : VFODisplay(vfos, num_vfos)
+   LCD2004_LCDLib_VFODisplay(VFODefinition **vfos
+                           , int num_vfos
+                           , boolean show_header)
+   : VFODisplay(vfos, num_vfos, show_header)
    { 
       // override some of the default display characters
       mc_indicator = '~'; // this renders as a right arrow
